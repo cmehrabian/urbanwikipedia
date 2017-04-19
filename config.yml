@@ -1,0 +1,63 @@
+title: Urban Wikipedia
+host: 'http://localhost'
+port: 80
+paths:
+  repo: ./repo
+  data: ./data
+uploads:
+  maxImageFileSize: 3
+  maxOtherFileSize: 100
+lang: en
+public: false
+auth:
+  local:
+    enabled: true
+  google:
+    enabled: true
+    clientId: GOOGLE_CLIENT_ID
+    clientSecret: GOOGLE_CLIENT_SECRET
+  microsoft:
+    enabled: true
+    clientId: MS_APP_ID
+    clientSecret: MS_APP_SECRET
+  facebook:
+    enabled: false
+    clientId: FACEBOOK_APP_ID
+    clientSecret: FACEBOOK_APP_SECRET
+  github:
+    enabled: false
+    clientId: GITHUB_CLIENT_ID
+    clientSecret: GITHUB_CLIENT_SECRET
+  slack:
+    enabled: false
+    clientId: SLACK_CLIENT_ID
+    clientSecret: SLACK_CLIENT_SECRET
+  ldap:
+    enabled: false
+    url: 'ldap://serverhost:389'
+    bindDn: cn='root'
+    bindCredentials: BIND_PASSWORD
+    searchBase: 'o=users,o=example.com'
+    searchFilter: '(uid={{username}})'
+    tlsEnabled: false
+    tlsCertPath: 'C:\example\root_ca_cert.crt'
+sessionSecret: 97447241c238ee5cd5f34892d57072cc81ae37ce5fe5cada6a9e8ce6f3f1f829
+db: 'mongodb://cmehrabian:dDXYdLKdepO1@ds161410.mlab.com:61410/urbanwiki'
+git:
+  url: 'https://github.com/cmehrabian/urbanwikipedia'
+  branch: master
+  auth:
+    type: basic
+    username: cmehrabian
+    password: Mansoori1!
+    privateKey: /etc/wiki/keys/git.pem
+    sslVerify: false
+  signature:
+    name: Cameron
+    email: cameron.mehrabian@gmail.com
+externalLogging:
+  bugsnag: false
+  loggly: false
+  papertrail: false
+  rollbar: false
+  sentry: false
