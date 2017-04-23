@@ -1,0 +1,33 @@
+extends ../layout.pug
+
+block rootNavRight
+  i.nav-item#notifload
+
+block content
+
+  #page-type-all
+    .container.is-fluid.has-collapsable-nav
+      .sidebar.is-collapsed
+        aside
+          .sidebar-label
+            span NAV
+          ul.sidebar-menu
+            li
+              a(href='/')
+                i.icon-home
+                span Home
+            if !isGuest
+              li
+                a(href='/admin')
+                  i.icon-head
+                  span Account
+            else
+              li
+                a(href='/login')
+                  i.icon-unlock
+                  span Login
+      ul.collapsable-nav(v-for='treeItem in tree', :class='{ "has-children": treeItem.hasChildren }', v-cloak)
+        li(v-for='page in treeItem.pages', :class='{ "is-active": page.isActive }')
+          a(v-on:click='fetch(page._id)')
+            i(:class='{ "icon-folder2": page.isFolder, "icon-file": !page.isFolder }')
+            span {{ page.title }}

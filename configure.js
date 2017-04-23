@@ -90,7 +90,7 @@ module.exports = (port, spinner) => {
             if (err || stdout.length < 3) {
               reject(new Error('Git is not installed or not reachable from PATH.'))
             }
-            let gitver = _.chain(stdout.replace(/[^\d.]/g, '')).split('.').take(3).join('.').value()
+            let gitver = _.head(stdout.match(/[\d]+\.[\d]+\.[\d]+/g))
             if (!semver.satisfies(semver.clean(gitver), '>=2.7.4')) {
               reject(new Error('Git version is too old. Minimum is v2.7.4.'))
             }
@@ -125,7 +125,8 @@ module.exports = (port, spinner) => {
    */
   app.post('/dbcheck', (req, res) => {
     let mongo = require('mongodb').MongoClient
-    mongo.connect(req.body.db, {
+    let mongoURI = (_.startsWith(req.body.db, '$')) ? process.env[req.body.db.slice(1)] : req.body.db
+    mongo.connect(mongoURI, {
       autoReconnect: false,
       reconnectTries: 2,
       reconnectInterval: 1000,

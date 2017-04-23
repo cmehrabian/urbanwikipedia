@@ -1,7 +1,5 @@
 'use strict'
 
-/* global winston */
-
 const fs = require('fs')
 const yaml = require('js-yaml')
 const _ = require('lodash')
@@ -15,7 +13,8 @@ const _ = require('lodash')
 module.exports = (confPaths) => {
   confPaths = _.defaults(confPaths, {
     config: './config.yml',
-    data: './app/data.yml'
+    data: './app/data.yml',
+    dataRegex: '../app/regex.js'
   })
 
   let appconfig = {}
@@ -24,14 +23,25 @@ module.exports = (confPaths) => {
   try {
     appconfig = yaml.safeLoad(fs.readFileSync(confPaths.config, 'utf8'))
     appdata = yaml.safeLoad(fs.readFileSync(confPaths.data, 'utf8'))
+    appdata.regex = require(confPaths.dataRegex)
   } catch (ex) {
-    winston.error(ex)
+    console.error(ex)
     process.exit(1)
   }
 
   // Merge with defaults
 
   appconfig = _.defaultsDeep(appconfig, appdata.defaults.config)
+
+  // Using ENV variables?
+
+  if (appconfig.port < 1) {
+    appconfig.port = process.env.PORT || 80
+  }
+
+  if (_.startsWith(appconfig.db, '$')) {
+    appconfig.db = process.env[appconfig.db.slice(1)]
+  }
 
   // List authentication strategies
 
@@ -41,7 +51,7 @@ module.exports = (confPaths) => {
       socialEnabled: (_.chain(appconfig.auth).omit('local').reject({ enabled: false }).value().length > 0)
     }
     if (appconfig.authStrategies.list.length < 1) {
-      winston.error(new Error('You must enable at least 1 authentication strategy!'))
+      console.error(new Error('You must enable at least 1 authentication strategy!'))
       process.exit(1)
     }
   } else {

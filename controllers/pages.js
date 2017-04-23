@@ -71,7 +71,7 @@ router.get('/create/*', (req, res, next) => {
     return res.render('error-forbidden')
   }
 
-  if (_.some(['create', 'edit', 'account', 'source', 'history', 'mk'], (e) => { return _.startsWith(req.path, '/create/' + e) })) {
+  if (_.some(['create', 'edit', 'account', 'source', 'history', 'mk', 'all'], (e) => { return _.startsWith(req.path, '/create/' + e) })) {
     return res.render('error', {
       message: 'You cannot create a document with this name as it is reserved by the system.',
       error: {}
@@ -128,6 +128,17 @@ router.put('/create/*', (req, res, next) => {
       error: err.message
     })
   })
+})
+
+// ==========================================
+// LIST ALL PAGES
+// ==========================================
+
+/**
+ * View tree view of all pages
+ */
+router.get('/all', (req, res, next) => {
+  res.render('pages/all')
 })
 
 // ==========================================

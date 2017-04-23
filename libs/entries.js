@@ -5,6 +5,7 @@ const path = require('path')
 const fs = Promise.promisifyAll(require('fs-extra'))
 const _ = require('lodash')
 const crypto = require('crypto')
+const qs = require('querystring')
 
 /**
  * Entries Model
@@ -163,7 +164,8 @@ module.exports = {
    * @return     {String}  Safe entry path
    */
   parsePath (urlPath) {
-    let wlist = new RegExp('[^a-z0-9/-]', 'g')
+    urlPath = qs.unescape(urlPath)
+    let wlist = new RegExp('(?!([^a-z0-9]|' + appdata.regex.cjk.source + '|[/-]))', 'g')
 
     urlPath = _.toLower(urlPath).replace(wlist, '')
 
@@ -270,7 +272,7 @@ module.exports = {
   },
 
   /**
-   * Update local cache and search index
+   * Update local cache
    *
    * @param      {String}   entryPath  The entry path
    * @return     {Promise}  Promise of the operation
@@ -299,13 +301,14 @@ module.exports = {
       winston.error(err)
       return err
     }).then((content) => {
+      // let entryPaths = _.split(content.entryPath, '/')
       return db.Entry.findOneAndUpdate({
         _id: content.entryPath
       }, {
         _id: content.entryPath,
         title: content.meta.title || content.entryPath,
         subtitle: content.meta.subtitle || '',
-        parent: content.parent.title || '',
+        parentTitle: content.parent.title || '',
         parentPath: content.parent.path || ''
       }, {
         new: true,
@@ -405,5 +408,15 @@ module.exports = {
     return fs.readFileAsync(path.join(ROOTPATH, 'client/content/create.md'), 'utf8').then((contents) => {
       return _.replace(contents, new RegExp('{TITLE}', 'g'), formattedTitle)
     })
+  },
+
+  /**
+   * Get all entries from base path
+   *
+   * @param {String} basePath Path to list from
+   * @return {Promise<Array>} List of entries
+   */
+  getFromTree (basePath) {
+    return db.Entry.find({ parentPath: basePath })
   }
 }

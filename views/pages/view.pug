@@ -28,7 +28,7 @@ block rootNavRight
 
 block content
 
-  #page-type-view(data-entrypath=pageData.meta.path)
+  #page-type-view.page-type-container(data-entrypath=pageData.meta.path)
     .container.is-fluid.has-mkcontent
       .columns.is-gapless
 
@@ -42,6 +42,10 @@ block content
                 a(href='/')
                   i.icon-home
                   span Home
+              li
+                a(href='/all')
+                  i.icon-paper
+                  span All Pages
               if pageData.parent
                 li
                   a(href='/' + pageData.parent.path)
